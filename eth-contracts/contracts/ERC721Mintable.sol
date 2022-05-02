@@ -16,8 +16,9 @@ contract Ownable {
     address private _owner;
     event Transfer(address indexed _from, address indexed _to);
 
-    modified onlyOnwer() {
+    modifier onlyOwner() {
         require(msg.sender == _owner, "Caller is not contract owner");
+        _;
     }
 
     constructor() internal {
@@ -27,7 +28,7 @@ contract Ownable {
     function transferOwnership(address newOwner) public onlyOwner {
         // TODO add functionality to transfer control of the contract to a newOwner.
         // make sure the new owner is a real address
-        require(newOwner != "0x0000000000000000000000000000000000000000", "new owner is not a real address");
+        require(newOwner != address(0), "new owner is not a real address");
 
         emit Transfer(_owner, newOwner);
         _owner = newOwner;
@@ -40,6 +41,36 @@ contract Ownable {
 //  3) create an internal constructor that sets the _paused variable to false
 //  4) create 'whenNotPaused' & 'paused' modifier that throws in the appropriate situation
 //  5) create a Paused & Unpaused event that emits the address that triggered the event
+contract Pausable is Ownable {
+    bool private _paused;
+
+    event Paused(address indexed _from);
+    event Unpaused(address indexed _from);
+
+    modifier whenNotPaused() {
+        require(!_paused, "Should not be paused");
+        _;
+    }
+
+    modifier paused() {
+        require(_paused, "Should be paused");
+        _;
+    }
+
+    constructor () internal {
+        _paused = false;
+    }
+
+    function setPaused(bool toPause) public {
+        _paused = toPause;
+
+        if (_paused) {
+            emit Paused(msg.sender);
+        } else {
+            emit Unpaused(msg.sender);
+        }
+    }
+}
 
 contract ERC165 is Ownable {
     bool private _paused;
@@ -57,6 +88,7 @@ contract ERC165 is Ownable {
 
     modifier whenNotPaused() {
         require(!_paused, "Should not be paused");
+        _;
     }
 
     /**
@@ -143,12 +175,12 @@ contract ERC721 is Pausable, ERC165 {
         // TODO add 'to' address to token approvals
         setApprovalForAll(to, true);
         // TODO emit Approval Event
-        emit Approval(owner, to, tokenId);
+        emit Approval(ownerOf(tokenId), to, tokenId);
     }
 
     function getApproved(uint256 tokenId) public view returns (address) {
         // TODO return token approval if it exists
-        return _tokenApprovals(tokenId);
+        return _tokenApprovals[tokenId];
     }
 
     /**
@@ -219,7 +251,7 @@ contract ERC721 is Pausable, ERC165 {
         // TODO mint tokenId to given address & increase token count of owner
         address owner = ownerOf(tokenId);
         _tokenOwner[tokenId] = to;
-        _ownedTokensCount[tokenId].increment();
+        _ownedTokensCount[owner].increment();
         // TODO emit Transfer event
         emit Transfer(owner, to, tokenId);
     }
@@ -235,7 +267,7 @@ contract ERC721 is Pausable, ERC165 {
         // TODO: clear approval
         _clearApproval(tokenId);
         // TODO: update token counts & transfer ownership of the token ID 
-        _ownedTokensCount[tokenId].decrement();
+        _ownedTokensCount[from].decrement();
         safeTransferFrom(from, to, tokenId);
         // TODO: emit correct event
         emit Transfer(from, to, tokenId);
@@ -469,15 +501,15 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
     }
 
     // TODO: create external getter functions for name, symbol, and baseTokenURI
-    function name() external {
+    function name() external returns (string memory) {
         return _name;
     }
 
-    function symbol() external {
+    function symbol() external returns (string memory) {
         return _symbol;
     }
 
-    function baseTokenURI() external {
+    function baseTokenURI() external returns (string memory) {
         return _baseTokenURI;
     }
 
@@ -506,8 +538,8 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //      -takes in a 'to' address and tokenId as parameters
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
-contract CustomERC721Token is ERC721Metadata {
-    constructor(string memory name, string memory symbol) private ERC721Metadata(name, symbol, "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") {}
+contract ERC721MintableComplete is ERC721Metadata {
+    constructor(string memory name, string memory symbol) public ERC721Metadata(name, symbol, "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") {}
 
     function mint(address to, uint256 tokenId) public onlyOwner() returns (bool) {
         super.setTokenURI(tokenId);
