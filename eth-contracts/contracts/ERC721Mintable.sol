@@ -173,7 +173,7 @@ contract ERC721 is Pausable, ERC165 {
         // TODO require the msg sender to be the owner of the contract or isApprovedForAll() to be true
         require(_isApprovedOrOwner(msg.sender, tokenId), "sender is not contract owner nor is approved.");
         // TODO add 'to' address to token approvals
-        setApprovalForAll(to, true);
+        _tokenApprovals[tokenId] = to;
         // TODO emit Approval Event
         emit Approval(ownerOf(tokenId), to, tokenId);
     }
@@ -247,11 +247,11 @@ contract ERC721 is Pausable, ERC165 {
     function _mint(address to, uint256 tokenId) internal {
 
         // TODO revert if given tokenId already exists or given address is invalid
-        require(to != ownerOf(tokenId) && to != address(0), "Given tokenId already exists or given address is invalid");
+        require(!_exists(tokenId), "Given tokenId already exists or given address is invalid");
         // TODO mint tokenId to given address & increase token count of owner
         address owner = ownerOf(tokenId);
         _tokenOwner[tokenId] = to;
-        _ownedTokensCount[owner].increment();
+        _ownedTokensCount[to].increment();
         // TODO emit Transfer event
         emit Transfer(owner, to, tokenId);
     }
@@ -268,7 +268,9 @@ contract ERC721 is Pausable, ERC165 {
         _clearApproval(tokenId);
         // TODO: update token counts & transfer ownership of the token ID 
         _ownedTokensCount[from].decrement();
+        _ownedTokensCount[to].increment();
         safeTransferFrom(from, to, tokenId);
+
         // TODO: emit correct event
         emit Transfer(from, to, tokenId);
     }
@@ -514,7 +516,6 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
     }
 
     function tokenURI(uint256 tokenId) external view returns (string memory) {
-        require(_exists(tokenId));
         return _tokenURIs[tokenId];
     }
 
@@ -539,11 +540,11 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
 contract ERC721MintableComplete is ERC721Metadata {
-    constructor(string memory name, string memory symbol) public ERC721Metadata(name, symbol, "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") {}
+    constructor() public ERC721Metadata("Siyu NFT", "SNFT", "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") {}
 
     function mint(address to, uint256 tokenId) public onlyOwner() returns (bool) {
-        super.setTokenURI(tokenId);
         super._mint(to, tokenId);
+        super.setTokenURI(tokenId);
         return true;
     }
 }
