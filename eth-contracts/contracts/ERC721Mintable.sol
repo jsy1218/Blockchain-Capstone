@@ -14,6 +14,10 @@ contract Ownable {
     //  4) fill out the transferOwnership function
     //  5) create an event that emits anytime ownerShip is transfered (including in the constructor)
     address private _owner;
+    function owner() public view returns (address) {
+        return _owner;
+    }
+    
     event Transfer(address indexed _from, address indexed _to);
 
     modifier onlyOwner() {
@@ -206,7 +210,7 @@ contract ERC721 is Pausable, ERC165 {
     }
 
     function transferFrom(address from, address to, uint256 tokenId) public {
-        require(_isApprovedOrOwner(msg.sender, tokenId));
+        require(_isApprovedOrOwner(msg.sender, tokenId), "msg.sender is not approved nor is the owner");
 
         _transferFrom(from, to, tokenId);
     }
@@ -269,8 +273,7 @@ contract ERC721 is Pausable, ERC165 {
         // TODO: update token counts & transfer ownership of the token ID 
         _ownedTokensCount[from].decrement();
         _ownedTokensCount[to].increment();
-        safeTransferFrom(from, to, tokenId);
-
+        _tokenOwner[tokenId] = to;
         // TODO: emit correct event
         emit Transfer(from, to, tokenId);
     }

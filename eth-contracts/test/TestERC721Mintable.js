@@ -47,21 +47,34 @@ contract('TestERC721Mintable', accounts => {
         })
 
         it('should transfer token from one owner to another', async function () { 
-            
+            let tokenId = 0;
+            await this.contract.safeTransferFrom(account_one, account_two, tokenId, {from: account_one});
+            let newOwner = await this.contract.ownerOf.call(tokenId);
+            assert.equal(newOwner, account_two, "Token " + tokenId + " should belong to " + account_two);
         })
     });
 
     describe('have ownership properties', function () {
         beforeEach(async function () { 
-            this.contract = await ERC721MintableComplete.new({from: account_one});
+            this.contract = await ERC721MintableComplete.new({from: owner});
         })
 
         it('should fail when minting when address is not contract owner', async function () { 
-            
+            let failed = false;
+
+            try {
+                await this.contract.mint(account_one, 0, {from: account_two});
+            } catch (e) {
+                failed = true;
+                assert.equal(e.reason, "Caller is not contract owner");
+            }
+
+            assert.equal(failed, true, "Account two " + account_two + " should've failed the token 0 mint.");      
         })
 
         it('should return contract owner', async function () { 
-            
+            let currentOwner = await this.contract.owner.call();
+            assert.equal(currentOwner, owner, "Contract owner should be " + owner);
         })
 
     });
