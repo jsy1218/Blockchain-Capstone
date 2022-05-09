@@ -1,2 +1,4 @@
+eth-contracts/build
+eth-contracts/dovenv
 node_module/
 package-lock.json

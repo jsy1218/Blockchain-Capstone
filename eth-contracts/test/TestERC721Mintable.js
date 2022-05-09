@@ -9,9 +9,12 @@ contract('TestERC721Mintable', accounts => {
     const account_one_tokens = 10;
     const account_two_tokens = 20;
 
+    const name = "Siyu NFT";
+    const symbol = "SNFT";
+
     describe('match erc721 spec', function () {
         beforeEach(async function () { 
-            this.contract = await ERC721MintableComplete.new({from: owner});
+            this.contract = await ERC721MintableComplete.new(name, symbol, {from: owner});
 
             // TODO: mint multiple tokens
             for(let i = 0; i < account_one_tokens; ++i){
@@ -56,7 +59,7 @@ contract('TestERC721Mintable', accounts => {
 
     describe('have ownership properties', function () {
         beforeEach(async function () { 
-            this.contract = await ERC721MintableComplete.new({from: owner});
+            this.contract = await ERC721MintableComplete.new(name, symbol, {from: owner});
         })
 
         it('should fail when minting when address is not contract owner', async function () { 

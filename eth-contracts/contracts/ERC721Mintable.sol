@@ -506,19 +506,19 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
     }
 
     // TODO: create external getter functions for name, symbol, and baseTokenURI
-    function name() external returns (string memory) {
+    function name() public view returns (string memory) {
         return _name;
     }
 
-    function symbol() external returns (string memory) {
+    function symbol() public view returns (string memory) {
         return _symbol;
     }
 
-    function baseTokenURI() external returns (string memory) {
+    function baseTokenURI() public view returns (string memory) {
         return _baseTokenURI;
     }
 
-    function tokenURI(uint256 tokenId) external view returns (string memory) {
+    function tokenURI(uint256 tokenId) public view returns (string memory) {
         return _tokenURIs[tokenId];
     }
 
@@ -529,8 +529,9 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
     // TIP #2: you can also use uint2str() to convert a uint to a string
         // see https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol for strConcat()
     // require the token exists before setting
-    function setTokenURI(uint256 tokenId) internal {
-        _tokenURIs[tokenId] = strConcat(_baseTokenURI, uint2str(tokenId));
+    function setTokenURI(uint256 tokenId, string memory uri) internal {
+        require(_exists(tokenId));
+        _tokenURIs[tokenId] = strConcat(uri, uint2str(tokenId));
     }
 }
 
@@ -543,11 +544,15 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
 contract ERC721MintableComplete is ERC721Metadata {
-    constructor() public ERC721Metadata("Siyu NFT", "SNFT", "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") {}
+    constructor(string memory name, string memory symbol) 
+    ERC721Metadata(name, symbol, "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") 
+    public
+    {
+    }
 
     function mint(address to, uint256 tokenId) public onlyOwner() returns (bool) {
         super._mint(to, tokenId);
-        super.setTokenURI(tokenId);
+        setTokenURI(tokenId, "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/");
         return true;
     }
 }

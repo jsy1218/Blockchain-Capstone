@@ -1,11 +1,9 @@
 // migrating the appropriate contracts
-var SquareVerifier = artifacts.require("./SquareVerifier.sol");
+var SquareVerifier = artifacts.require("./verifier.sol");
 var SolnSquareVerifier = artifacts.require("./SolnSquareVerifier.sol");
-// TODO delete
-var ERC721MintableComplete = artifacts.require('ERC721MintableComplete');
 
 module.exports = function(deployer) {
-  //deployer.deploy(SquareVerifier);
-  //deployer.deploy(SolnSquareVerifier);
-  deployer.deploy(ERC721MintableComplete);
+  deployer.deploy(SquareVerifier).then(function () {
+    return deployer.deploy(SolnSquareVerifier, SquareVerifier.address, "Siyu NFT", "SNFT");
+  })
 };
