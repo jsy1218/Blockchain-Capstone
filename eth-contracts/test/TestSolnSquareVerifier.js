@@ -6,13 +6,11 @@ contract('TestSolnSquareVerifier', accounts => {
     const owner = accounts[0];
     const account_one = accounts[1];
     const { proof: { a, b, c }, inputs: input } = zokratesProof;
-    const name = "Siyu NFT";
-    const symbol = "SNFT";
 
     describe('match soln square verifier', function () {
         beforeEach(async function () { 
             this.verifier = await Verifier.new({from: owner});
-            this.contract = await SolnSquareVerifier.new(this.verifier.address, name, symbol, {from: owner});
+            this.contract = await SolnSquareVerifier.new(this.verifier.address, {from: owner});
         })
 
         // Test if a new solution can be added for contract - SolnSquareVerifier
