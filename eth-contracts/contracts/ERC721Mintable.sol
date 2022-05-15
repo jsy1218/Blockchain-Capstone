@@ -543,7 +543,9 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //      -takes in a 'to' address and tokenId as parameters
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
-contract ERC721MintableComplete is ERC721Metadata("Siyu NFT", "SNFT", "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") {
+contract ERC721MintableComplete is ERC721Metadata {
+
+    constructor (string memory name, string memory symbol) ERC721Metadata(name, symbol, "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") public {}
 
     function mint(address to, uint256 tokenId) public onlyOwner returns (bool) {
         super._mint(to, tokenId);

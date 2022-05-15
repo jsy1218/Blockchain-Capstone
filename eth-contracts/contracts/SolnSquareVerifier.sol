@@ -24,7 +24,7 @@ contract SolnSquareVerifier is ERC721MintableComplete {
     // TODO Create an event to emit when a solution is added
     event SolutionAdded(bytes32 indexed index, address indexed addr);
 
-    constructor(address verifierAddress, string memory name, string memory symbol) ERC721MintableComplete(name, symbol) public
+    constructor(address verifierAddress) ERC721MintableComplete("Siyu NFT", "SNFT") public
     {
         squareVerifier = Verifier(verifierAddress);
     }
