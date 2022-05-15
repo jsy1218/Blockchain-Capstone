@@ -4,6 +4,6 @@ var SolnSquareVerifier = artifacts.require("./SolnSquareVerifier.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(SquareVerifier).then(function () {
-    return deployer.deploy(SolnSquareVerifier, SquareVerifier.address, "Siyu NFT", "SNFT");
+    return deployer.deploy(SolnSquareVerifier, SquareVerifier.address);
   })
 };

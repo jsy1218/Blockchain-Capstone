@@ -506,22 +506,22 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
     }
 
     // TODO: create external getter functions for name, symbol, and baseTokenURI
-    function name() public view returns (string memory) {
+    function name() external view returns (string memory) {
         return _name;
     }
 
-    function symbol() public view returns (string memory) {
+    function symbol() external view returns (string memory) {
         return _symbol;
     }
 
-    function baseTokenURI() public view returns (string memory) {
+    function baseTokenURI() external view returns(string memory) {
         return _baseTokenURI;
     }
 
-    function tokenURI(uint256 tokenId) public view returns (string memory) {
+    function tokenURI(uint256 tokenId) external view returns (string memory) {
+        require(_exists(tokenId));
         return _tokenURIs[tokenId];
     }
-
 
     // TODO: Create an internal function to set the tokenURI of a specified tokenId
     // It should be the _baseTokenURI + the tokenId in string form
@@ -529,9 +529,9 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
     // TIP #2: you can also use uint2str() to convert a uint to a string
         // see https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol for strConcat()
     // require the token exists before setting
-    function setTokenURI(uint256 tokenId, string memory uri) internal {
+    function _setTokenURI(uint256 tokenId) internal {
         require(_exists(tokenId));
-        _tokenURIs[tokenId] = strConcat(uri, uint2str(tokenId));
+        _tokenURIs[tokenId] = strConcat(_baseTokenURI, uint2str(tokenId));
     }
 }
 
@@ -543,16 +543,11 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //      -takes in a 'to' address and tokenId as parameters
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
-contract ERC721MintableComplete is ERC721Metadata {
-    constructor(string memory name, string memory symbol) 
-    ERC721Metadata(name, symbol, "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") 
-    public
-    {
-    }
+contract ERC721MintableComplete is ERC721Metadata("Siyu NFT", "SNFT", "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") {
 
-    function mint(address to, uint256 tokenId) public onlyOwner() returns (bool) {
+    function mint(address to, uint256 tokenId) public onlyOwner returns (bool) {
         super._mint(to, tokenId);
-        setTokenURI(tokenId, "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/");
+        super._setTokenURI(tokenId);
         return true;
     }
 }
