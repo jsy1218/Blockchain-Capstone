@@ -293,12 +293,11 @@ async function mintNft() {
   );
 
   for (let tokenId = 0; tokenId < proofs.length; tokenId++) {
-    let tokenId = 0;
     const proof = proofs[tokenId].proof;
     const input = proofs[tokenId].inputs;
 
     await nftContract.methods
-    .mint(NFT_CONTRACT_ADDRESS, tokenId, proof.a, proof.b, proof.c, input)
+    .mint(OWNER_ADDRESS, tokenId, proof.a, proof.b, proof.c, input)
     .send({ from: OWNER_ADDRESS, gas: 4500000 }, (error, result) => {
         if (error) {
           console.log(error);

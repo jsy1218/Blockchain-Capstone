@@ -811,11 +811,11 @@ Buyer - 0xd4dc5d8A2bdf601bc9AaF2dEe027Fee27b9a40cF
   ]
   ```
 
-  # MarketPlace Storefront
+# MarketPlace Storefront
 
-  https://testnets.opensea.io/collection/siyu-nft-v3
+https://testnets.opensea.io/collection/siyu-nft-v3
 
-  # Dependencies
+# Dependencies
 
 ```
 JanettekiMacBook-Pro:FlightSurety janet$ truffle version
